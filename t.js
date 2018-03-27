@@ -2,6 +2,9 @@
 
 'use strict';
 const fetch = require("node-fetch") //todo
+var fs = require('fs');
+//const jsonPrototype = require("jsonprototype") 
+
 // import {vk} from "vk" //todo
 
 //var keypair = require('keypair');
@@ -25,6 +28,27 @@ var PlainText = "Matt"
 //var EncryptionResult = cryptico.encrypt(PlainText, MattsPublicKeyString);
 //console.log(EncryptionResult)
 console.log(MattsPublicKeyString)
+fs.readFile("key", { encoding: 'utf-8' }, function (err, data) {
+    if (!err) {
+        console.log('from file: ' + data);
+        if (data) {
+            MattsRSAkey= cryptico.RSAKey.parse(data)
+             
+            MattsPublicKeyString = cryptico.publicKeyString(MattsRSAkey);
+        }
+        //        response.writeHead(200, {'Content-Type': 'text/html'});
+        //      response.write(data);
+        //    response.end();
+    } else {
+        //console.warn(err);
+        fs.writeFile("key", JSON.stringify(MattsRSAkey), function (err) {
+            if (err) {
+                return console.error(err);
+            }
+            console.warn("The NEW! key was saved!");
+        });
+    }
+});
 
 //var DecryptionResult = cryptico.decrypt(CipherText, MattsRSAkey);
 //console.log(DecryptionResult.plaintext)
@@ -50,8 +74,8 @@ console.log(MattsPublicKeyString)
 // console.log(sigHex)
 // return ;
 
- console.log("init...");
-var ACCESS_TOKEN = "9778b47928c7c593dd83b41b84172d96ee0910047472aef9d90e22d581e01c4b5df7962d4aff1f5f31717"
+console.log("init...");
+var ACCESS_TOKEN = "9a53b2fc0ce3a7f469dca24d6ea4f7fb7f128afce3e15e545313ce66d8c5eb78cb32a479bf40ff5818120"
 
 //updates:
 longPoll()
@@ -90,13 +114,13 @@ function Send(text = "default text", to = 75332891, token) {
 function longPoll(text, to, token) {//todo ACCESS_TOKEN (..)
     function upd(server, key, ts) {
         return fetch("https://" + server + "?act=a_check&key=" + key + "&ts=" + ts + "&wait=25&mode=2&version=2")
-        .then((rawUpdate) => {
-            //console.log(rawUpdate)
-            return rawUpdate.json()
-        }).then((update) => {
-            //console.log(update)
-            return update
-        }).catch(console.error);
+            .then((rawUpdate) => {
+                //console.log(rawUpdate)
+                return rawUpdate.json()
+            }).then((update) => {
+                //console.log(update)
+                return update
+            }).catch(console.error);
     }
 
     fetch("https://api.vk.com/method/messages.getLongPollServer?access_token=" + ACCESS_TOKEN + "&v=5.73")
